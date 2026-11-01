@@ -1679,13 +1679,10 @@ impl Player {
         // Preloaded registers are numbered from 1 in the order Flash uses;
         // register 0 is never allocated.
         let mut r = 1usize;
+        // SuppressThis only keeps `this` out of the local scope; a body that
+        // asks for it in a register still gets it there, as Flash does.
         if def.flags & avm1::PRELOAD_THIS != 0 {
-            let v = if def.flags & avm1::SUPPRESS_THIS != 0 {
-                Value::Undefined
-            } else {
-                this.clone()
-            };
-            set_reg(&mut frame, r, v);
+            set_reg(&mut frame, r, this.clone());
             r += 1;
         }
         // `arguments` is a real array holding the call's arguments, but only a

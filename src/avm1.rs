@@ -144,15 +144,18 @@ pub struct Function {
 }
 
 // DefineFunction2 flag bits, in the order the preloaded registers are assigned.
+// The bit values are the ones the SWF format defines (and Ruffle reads): the
+// preloads occupy the low bits and the suppresses follow, so a movie compiled
+// by Flash gets `this` in register 1 and its named parameters right after.
 pub const PRELOAD_THIS: u16 = 1 << 0;
-pub const SUPPRESS_THIS: u16 = 1 << 1;
-pub const PRELOAD_ARGUMENTS: u16 = 1 << 2;
-pub const SUPPRESS_ARGUMENTS: u16 = 1 << 3;
-pub const PRELOAD_SUPER: u16 = 1 << 4;
-pub const SUPPRESS_SUPER: u16 = 1 << 5;
-pub const PRELOAD_ROOT: u16 = 1 << 6;
-pub const PRELOAD_PARENT: u16 = 1 << 7;
-pub const PRELOAD_GLOBAL: u16 = 1 << 8;
+pub const PRELOAD_ARGUMENTS: u16 = 1 << 1;
+pub const PRELOAD_SUPER: u16 = 1 << 2;
+pub const PRELOAD_ROOT: u16 = 1 << 3;
+pub const PRELOAD_PARENT: u16 = 1 << 4;
+pub const PRELOAD_GLOBAL: u16 = 1 << 5;
+pub const SUPPRESS_THIS: u16 = 1 << 6;
+pub const SUPPRESS_ARGUMENTS: u16 = 1 << 7;
+pub const SUPPRESS_SUPER: u16 = 1 << 8;
 
 #[derive(Clone, Debug)]
 pub enum Action {
