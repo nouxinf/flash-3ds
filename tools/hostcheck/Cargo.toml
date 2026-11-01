@@ -1,0 +1,16 @@
+[package]
+name = "hostcheck"
+version = "0.1.0"
+edition = "2021"
+# `cargo run` without --bin should still run the inspector.
+default-run = "hostcheck"
+
+# A desktop harness for the platform-independent parts of the player. It
+# includes src/gfx.rs, src/swf.rs and src/player.rs directly, so the renderer
+# and decoder can be exercised and diffed against reference images without
+# deploying to a 3DS.
+[dependencies]
+miniz_oxide = "0.8"
+png = "0.17"
+# Reference decoder, used only by the refdump cross-check binary.
+swf = "0.2"

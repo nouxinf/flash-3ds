@@ -66,3 +66,16 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+
+# local build artefacts
+.tmp/
+dist/
+
+# headless harness screenshot artifacts (written next to the cwd)
+/--*.png
+/x-*.png
+assets/icon.png
+assets/banner.png
+assets/banner.wav
+assets/sample.swf
+target/

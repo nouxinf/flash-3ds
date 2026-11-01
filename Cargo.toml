@@ -1,0 +1,32 @@
+[package]
+name = "flash3ds"
+version = "0.1.0"
+edition = "2021"
+authors = ["nouxinf"]
+license = "MIT"
+description = "Flash (SWF) player for the Nintendo 3DS"
+
+[dependencies]
+# Deliberately unpinned: pthread-3ds (a transitive dependency) pulls ctru-sys
+# from this same repository at HEAD, and ctru-sys declares links = "ctru", so
+# pinning a different revision makes cargo see two native-library owners and
+# refuse to resolve. Cargo.lock pins the exact commit instead; commit it.
+ctru-rs = { git = "https://github.com/rust3ds/ctru-rs" }
+# Pure-Rust zlib for CWS-compressed SWFs and DefineBitsLossless payloads.
+miniz_oxide = "0.8"
+# Raw libctru calls for the SD filesystem (ctru-rs has no high-level wrapper).
+ctru-sys = { path = "vendor/ctru-sys" }
+
+# ctru-sys 0.5.0 as published fails to build with bindgen 0.72: bindgen only
+# writes the static-function wrapper when it finds static functions, libctru
+# has none, and cc-rs then fails on the missing file. vendor/ctru-sys is the
+# upstream crate at the same revision with a three-line guard in build.rs.
+[patch."https://github.com/rust3ds/ctru-rs"]
+ctru-sys = { path = "vendor/ctru-sys" }
+
+# Fat LTO plus strip made devkitARM's linker fail with a bare "invalid
+# operation" on this toolchain; plain optimised release links cleanly.
+[profile.release]
+opt-level = 3
+lto = false
+strip = false

@@ -1,0 +1,10 @@
+BasicInfo:
+  Title                   : "flash3ds"
+  CompanyCode             : "00"
+  ProductCode             : "CTR-H-FLSH"
+  ContentType             : Application
+  Logo                    : Homebrew
+
+TitleInfo:
+  Category                : Application
+  UniqueId                : 0xFF3D5
