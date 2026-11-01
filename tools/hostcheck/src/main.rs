@@ -88,6 +88,22 @@ fn fmt_action(a: &avm1::Action, pool: &[String]) -> String {
     }
 }
 
+/// Visits every instance on a display list and its children.
+///
+/// Harness tooling only: a game's controls live several sprites deep, so a
+/// show/hide hook that only looks at the top level cannot reach them.
+fn for_each_instance(
+    list: &mut std::collections::BTreeMap<u16, player::Instance>,
+    f: &mut dyn FnMut(&mut player::Instance),
+) {
+    for inst in list.values_mut() {
+        f(inst);
+        if let Some(sp) = inst.sprite.as_mut() {
+            for_each_instance(&mut sp.list, f);
+        }
+    }
+}
+
 /// Prints every addressable action block in a movie, or only the blocks whose
 /// strings mention `filter`. Reading the game's own bytecode is how a missing
 /// language feature is identified instead of guessed at.
@@ -786,21 +802,24 @@ fn main() {
         // full-screen overlay that swallows input apart from the game under it.
         if let Ok(list) = std::env::var("FLASH_HIDE") {
             for want in list.split(',') {
-                for inst in p.list.values_mut() {
+                let before = p.list.len();
+                for_each_instance(&mut p.list, &mut |inst| {
                     if inst.name.as_deref() == Some(want) {
                         inst.visible = false;
-                        println!("hid {want}");
                     }
-                }
+                });
+                println!("hid {want} (top level {before} -> {})", p.list.len());
             }
         }
         if let Ok(name) = std::env::var("FLASH_SHOW") {
-            for inst in p.list.values_mut() {
+            // Nested, because a control a movie leaves hidden is usually not
+            // at the top level: `startrnd_btn` sits 465 deep in a panel.
+            for_each_instance(&mut p.list, &mut |inst| {
                 if inst.name.as_deref() == Some(name.as_str()) {
                     inst.visible = true;
                     println!("forced {name} visible");
                 }
-            }
+            });
         }
         // `--clicks "x,y x,y ..."` replays a sequence of taps, which is how a
         // game that needs "pick a tower, drop it, start the round" is driven.
